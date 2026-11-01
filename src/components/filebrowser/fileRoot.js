@@ -1,8 +1,21 @@
+export const FILE_ROOTS_TIMEOUT_MS = 3000
+
 export function fileRootFrom(roots) {
 	if (!Array.isArray(roots) || roots.length === 0) {
 		return '/DATA'
 	}
+	// Only the first [file] ManagementRoots entry. Later roots are not
+	// listed in the sidebar.
 	return roots[0]
+}
+
+export function withTimeout(promise, ms) {
+	return Promise.race([
+		promise,
+		new Promise((_, reject) => {
+			setTimeout(() => reject(new Error('timeout')), ms)
+		}),
+	])
 }
 
 export function homeFolders(root) {

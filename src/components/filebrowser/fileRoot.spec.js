@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fileRootFrom, homeFolders } from './fileRoot.js'
+import { fileRootFrom, homeFolders, withTimeout } from './fileRoot.js'
 
 describe('fileRootFrom', () => {
 	it('returns /DATA when roots is missing, not an array, or empty', () => {
@@ -9,9 +9,19 @@ describe('fileRootFrom', () => {
 		expect(fileRootFrom([])).toBe('/DATA')
 	})
 
-	it('returns the first root', () => {
+	it('returns only the first root; later ManagementRoots stay unused', () => {
 		expect(fileRootFrom(['/tmp/data'])).toBe('/tmp/data')
 		expect(fileRootFrom(['/a', '/b'])).toBe('/a')
+	})
+})
+
+describe('withTimeout', () => {
+	it('rejects when the promise does not settle', async () => {
+		await expect(withTimeout(new Promise(() => {}), 20)).rejects.toThrow('timeout')
+	})
+
+	it('resolves when the promise wins', async () => {
+		await expect(withTimeout(Promise.resolve(1), 50)).resolves.toBe(1)
 	})
 })
 

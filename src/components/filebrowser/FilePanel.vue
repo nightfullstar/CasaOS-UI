@@ -277,7 +277,7 @@ import events from '@/events/events'
 import VueBreakpointMixin from '@/mixins/breakpoint'
 import { filterHiddenFiles } from '@/mixins/file_utils'
 import { mixin } from '@/mixins/mixin'
-import { fileRootFrom } from './fileRoot.js'
+import { FILE_ROOTS_TIMEOUT_MS, fileRootFrom, withTimeout } from './fileRoot.js'
 
 const SHOW_HIDDEN_FILES_STORAGE_KEY = 'casaos-filebrowser-show-hidden-files'
 
@@ -465,8 +465,8 @@ export default {
 
 	async mounted() {
 		await this.resolveFileRoot()
-		this.$EventBus.$emit(events.RELOAD_FILE_LIST)
 		this.init()
+		this.$EventBus.$emit(events.RELOAD_FILE_LIST)
 		// on a tab of its own nobody calls init(path): the folder comes in the
 		// address (#/files?path=/DATA/...)
 		if (this.$route.path == '/files') {
@@ -565,7 +565,7 @@ export default {
 
 		async resolveFileRoot() {
 			try {
-				const res = await this.$api.file.getRoots()
+				const res = await withTimeout(this.$api.file.getRoots(), FILE_ROOTS_TIMEOUT_MS)
 				this.rootPath = fileRootFrom(res?.data?.data?.roots)
 			} catch {
 				this.rootPath = '/DATA'
