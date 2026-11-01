@@ -1,13 +1,13 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { seedMockSession, clearMockSession } from './session.js'
+import { clearMockSession, seedMockSession } from './session.js'
 
 function memoryStorage(initial = {}) {
 	const data = { ...initial }
 	return {
 		getItem: key => (Object.hasOwn(data, key) ? data[key] : null),
 		setItem: (key, value) => { data[key] = String(value) },
-		removeItem: key => { delete data[key] },
+		removeItem: (key) => { delete data[key] },
 		data,
 	}
 }

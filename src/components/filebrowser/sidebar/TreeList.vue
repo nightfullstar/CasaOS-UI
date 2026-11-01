@@ -15,10 +15,10 @@
 
 <script>
 import has from 'lodash/has'
+import { homeFolders } from '../fileRoot.js'
 import TreeListItem from './TreeListItem.vue'
 import { mixin } from '@/mixins/mixin'
 import events from '@/events/events'
-import { homeFolders } from '../fileRoot.js'
 
 export default {
 	mixins: [mixin],
@@ -64,7 +64,7 @@ export default {
 		},
 	},
 	watch: {
-		'filePanel.fileRootReady'(ready) {
+		'filePanel.fileRootReady': function (ready) {
 			if (ready) {
 				this.getNewList()
 			}
