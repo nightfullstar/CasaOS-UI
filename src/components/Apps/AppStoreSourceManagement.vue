@@ -28,6 +28,9 @@
 									@click="unregisterAppStore(item.id)" />
 							</template>
 						</p>
+						<b-button v-if="successorOf(item)" size="is-small" type="is-text" @click="offerSuccessor(item)">
+							{{ $t("Switch to the ReCasaOS catalogue") }}
+						</b-button>
 					</b-dropdown-item>
 					<hr class="dropdown-divider">
 					<b-dropdown-item @click="changeInputState">
@@ -114,6 +117,39 @@ const sourceList = ref([])
 const url = ref('')
 const operationSourceName = ref(-1)
 
+const DEAD_BIG_BEAR = 'https://github.com/bigbeartechworld/big-bear-casaos/archive/refs/heads/master.zip'
+const RECASAOS_CATALOGUE = 'https://recasaos.org/store/recasaos.zip'
+
+function successorOf(item) {
+	if (item?.successor)
+		return item.successor
+	if (item?.url === DEAD_BIG_BEAR)
+		return RECASAOS_CATALOGUE
+	return ''
+}
+
+function offerSuccessor(item) {
+	const successor = successorOf(item)
+	if (!successor)
+		return
+	app.$buefy.dialog.confirm({
+		message: app.$t('Switch to the ReCasaOS catalogue'),
+		confirmText: app.$t('Switch to the ReCasaOS catalogue'),
+		cancelText: app.$t('Cancel'),
+		onConfirm: () => {
+			addLoadingState.value = true
+			app.$openAPI.appManagement.appStore.unregisterAppStore(item.id).then((res) => {
+				if (res.status === 200)
+					registerAppStore(successor)
+				else
+					addLoadingState.value = false
+			}).catch(() => {
+				addLoadingState.value = false
+			})
+		},
+	})
+}
+
 function changeInputState(alwaysNotDisplay = false) {
 	if (componentState.value !== 'active_input_state') {
 		if (alwaysNotDisplay === true) {
@@ -184,6 +220,8 @@ function getSourceList() {
 					id: item.id,
 					url: item.url,
 					name: item.name,
+					successor: item.successor,
+					status: item.status,
 				}
 			})
 			componentState.value = storeList.length === 0 ? 'first_add_state' : 'second_list_state'
