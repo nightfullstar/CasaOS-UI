@@ -138,13 +138,20 @@ function offerSuccessor(item) {
 		cancelText: app.$t('Cancel'),
 		onConfirm: () => {
 			addLoadingState.value = true
-			app.$openAPI.appManagement.appStore.unregisterAppStore(item.id).then((res) => {
-				if (res.status === 200)
-					registerAppStore(successor)
+			const afterSuccessor = () => {
+				unregisterAppStore(item.id)
+				addLoadingState.value = false
+			}
+			app.$openAPI.appManagement.appStore.registerAppStoreSync(successor).then((res) => {
+				if (res.status === 200 || res.status === 409)
+					afterSuccessor()
 				else
 					addLoadingState.value = false
-			}).catch(() => {
-				addLoadingState.value = false
+			}).catch((err) => {
+				if (err?.response?.status === 409)
+					afterSuccessor()
+				else
+					addLoadingState.value = false
 			})
 		},
 	})

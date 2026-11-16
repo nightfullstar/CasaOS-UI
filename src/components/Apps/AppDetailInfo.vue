@@ -15,7 +15,7 @@
 			<div class="app-header is-flex pb-4 b-line">
 				<div class="header-icon mr-5">
 					<b-image :key="appDetailData.icon"
-						:src="appDetailData.icon"
+						:src="storeAssetUrl(appDetailData.icon)"
 						:src-fallback="require('@/assets/img/app/default.svg')"
 						class="is-128x128 icon-shadow"
 						webp-fallback=".jpg" />
@@ -133,12 +133,12 @@
 					@swiper="handleSwiperReadied">
 					<SwiperSlide v-for="item in appDetailData.screenshot_link" :key="`sc${item}`">
 						<div class="gap">
-							<b-image :src="item"
+							<b-image :src="storeAssetUrl(item)"
 								:src-fallback="require('@/assets/img/app/swiper_placeholder.png')"
 								class="border-8 is-clickable"
 								placeholder
 								ratio="16by9"
-								@click="zoomScreenshot(item)" />
+								@click="zoomScreenshot(storeAssetUrl(item))" />
 						</div>
 					</SwiperSlide>
 				</Swiper>
@@ -167,6 +167,7 @@ import business_OpenThirdApp from '@/mixins/app/Business_OpenThirdApp'
 import business_ShowNewAppTag from '@/mixins/app/Business_ShowNewAppTag'
 import commonI18n from '@/mixins/base/common-i18n'
 import app from '@/App.vue'
+import { storeAssetUrl } from '@/components/Apps/storeAssetUrl'
 
 export default {
 	name: 'AppDetailInfo',
@@ -250,6 +251,7 @@ export default {
 		},
 	},
 	methods: {
+		storeAssetUrl,
 		updateSwiper() {
 			this.swiper.slideTo(0, 0, false)
 		},

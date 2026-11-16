@@ -152,7 +152,7 @@
 				<div class="has-text-centered is-flex is-justify-content-center is-flex-direction-column pt-5 pb-3px img-c">
 					<div class="is-flex is-justify-content-center">
 						<div class="is-relative">
-							<b-image :alt="statsBadge ? statsBadge.label : undefined" :class="dotClass(item.status, isLoading)" :src="item.icon"
+							<b-image :alt="statsBadge ? statsBadge.label : undefined" :class="dotClass(item.status, isLoading)" :src="storeAssetUrl(item.icon)"
 								:src-fallback="require('@/assets/img/app/default.svg')" class="is-64x64"
 								webp-fallback=".jpg" @click="!compact && openApp(item)" />
 							<!-- The number of active resource alerts, on the Statistics card only. Numbers only: the words are the icon's alt. -->
@@ -248,6 +248,7 @@ import { renderSize } from '@/mixins/file_utils'
 import tipEditorModal from '@/components/Apps/TipEditorModal.vue'
 import commonI18n, { ice_i18n } from '@/mixins/base/common-i18n'
 import { menuPlace, tipSide } from '@/components/Apps/menuSide'
+import { storeAssetUrl } from '@/components/Apps/storeAssetUrl'
 
 // Query parameter carrying the ID of the container a recreate was asked for. The
 // backend copies every query parameter of the request into the properties of the
@@ -492,6 +493,7 @@ export default {
 	},
 
 	methods: {
+		storeAssetUrl,
 		// the menu may not be there (a card without actions)
 		closeMenu() {
 			if (this.$refs.dro) {

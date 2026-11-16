@@ -112,7 +112,7 @@
 									class="pb-5">
 									<div class="gap" @click="showAppDetial(item.id)">
 										<b-image :placeholder="require('@/assets/img/app/swiper_placeholder.png')"
-											:src="item.thumbnail"
+											:src="storeAssetUrl(item.thumbnail)"
 											:src-fallback="require('@/assets/img/app/swiper_placeholder.png')"
 											class="border-8 is-clickable"
 											ratio="16by9" />
@@ -120,7 +120,7 @@
 									<div class="is-flex pt-5 is-align-items-center">
 										<div class="mr-3" @click="showAppDetial(item.id)">
 											<b-image :placeholder="require('@/assets/img/app/default.svg')"
-												:src="item.icon"
+												:src="storeAssetUrl(item.icon)"
 												:src-fallback="require('@/assets/img/app/default.svg')"
 												class="is-64x64 is-clickable icon-shadow" />
 										</div>
@@ -277,7 +277,7 @@
 							class="column app-item is-one-quarter">
 							<div class="is-flex">
 								<div class="mr-4 is-clickable" @click="showAppDetial(item.id)">
-									<b-image :src="item.icon"
+									<b-image :src="storeAssetUrl(item.icon)"
 										:src-fallback="require('@/assets/img/app/default.svg')"
 										class="is-64x64 icon-shadow"
 										style="display: flex; align-items: center"
@@ -345,7 +345,7 @@
 								class="column is-one-quarter">
 								<div class="is-flex is-align-items-center">
 									<div class="mr-4 is-clickable" @click="showAppDetial(item.id)">
-										<b-image :src="item.icon"
+										<b-image :src="storeAssetUrl(item.icon)"
 											:src-fallback="require('@/assets/img/app/default.svg')"
 											class="is-64x64 icon-shadow"
 											webp-fallback=".jpg" />
@@ -532,7 +532,7 @@
 							<p class="control">
 								<span class="button is-static container-icon">
 									<b-image :key="settingData.icon"
-										:src="settingData.icon"
+										:src="storeAssetUrl(settingData.icon)"
 										:src-fallback="require('@/assets/img/app/default.svg')"
 										class="is-32x32"
 										ratio="1by1" />
@@ -673,6 +673,7 @@ import ComposeEditor from '@/components/Apps/ComposeEditor.vue'
 import EnvEditor from '@/components/Apps/EnvEditor.vue'
 import ContainersTab from '@/components/Apps/ContainersTab.vue'
 import GitRepoTab from '@/components/Apps/GitRepoTab.vue'
+import { storeAssetUrl } from '@/components/Apps/storeAssetUrl'
 import { pickContainerId } from '@/components/Apps/containerSummary'
 import business_OpenThirdApp from '@/mixins/app/Business_OpenThirdApp'
 import business_ShowNewAppTag from '@/mixins/app/Business_ShowNewAppTag'
@@ -1100,6 +1101,7 @@ export default {
 		this.searchAndSourcesStatusController()
 	},
 	methods: {
+		storeAssetUrl,
 		resetSearchAndSourcesStatus() {
 			switch (this.isMobile) {
 				case true:

@@ -18,6 +18,7 @@ function api(list) {
 	return {
 		appStoreList: vi.fn(() => Promise.resolve({ status: 200, data: { data: list } })),
 		registerAppStore: vi.fn(() => Promise.resolve({ status: 200 })),
+		registerAppStoreSync: vi.fn(() => Promise.resolve({ status: 200 })),
 		unregisterAppStore: vi.fn(() => Promise.resolve({ status: 200 })),
 	}
 }
@@ -70,21 +71,33 @@ describe('a dead app-store source', () => {
 		live.wrapper.unmount()
 	})
 
-	it('unregisters the dead id and registers the org catalogue once confirmed', async () => {
+	it('registers the successor first, then unregisters the dead id', async () => {
 		const { wrapper, appStore, confirm } = await open([{ id: 7, url: DEAD }])
 		await switchButton(wrapper).trigger('click')
 
 		expect(confirm).toHaveBeenCalled()
 		expect(appStore.unregisterAppStore).not.toHaveBeenCalled()
-		expect(appStore.registerAppStore).not.toHaveBeenCalled()
+		expect(appStore.registerAppStoreSync).not.toHaveBeenCalled()
 
 		await confirm.mock.calls[0][0].onConfirm()
 		await flushPromises()
 
+		expect(appStore.registerAppStoreSync).toHaveBeenCalledWith(ORG)
 		expect(appStore.unregisterAppStore).toHaveBeenCalledWith(7)
-		expect(appStore.registerAppStore).toHaveBeenCalledWith(ORG)
-		expect(appStore.unregisterAppStore.mock.invocationCallOrder[0])
-			.toBeLessThan(appStore.registerAppStore.mock.invocationCallOrder[0])
+		expect(appStore.registerAppStoreSync.mock.invocationCallOrder[0])
+			.toBeLessThan(appStore.unregisterAppStore.mock.invocationCallOrder[0])
+		wrapper.unmount()
+	})
+
+	it('treats 409 Conflict as the successor already present, then unregisters', async () => {
+		const { wrapper, appStore, confirm } = await open([{ id: 7, url: DEAD }])
+		appStore.registerAppStoreSync.mockRejectedValueOnce({ response: { status: 409 } })
+		await switchButton(wrapper).trigger('click')
+		await confirm.mock.calls[0][0].onConfirm()
+		await flushPromises()
+
+		expect(appStore.registerAppStoreSync).toHaveBeenCalledWith(ORG)
+		expect(appStore.unregisterAppStore).toHaveBeenCalledWith(7)
 		wrapper.unmount()
 	})
 
@@ -108,8 +121,10 @@ describe('a dead app-store source', () => {
 		await confirm.mock.calls[0][0].onConfirm()
 		await flushPromises()
 
+		expect(appStore.registerAppStoreSync).toHaveBeenCalledWith(ORG)
 		expect(appStore.unregisterAppStore).toHaveBeenCalledWith(9)
-		expect(appStore.registerAppStore).toHaveBeenCalledWith(ORG)
+		expect(appStore.registerAppStoreSync.mock.invocationCallOrder[0])
+			.toBeLessThan(appStore.unregisterAppStore.mock.invocationCallOrder[0])
 		wrapper.unmount()
 	})
 })
